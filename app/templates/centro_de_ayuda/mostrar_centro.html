@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if centro.estado.nombre == 'rechazado' %}
+<div class="alert alert-warning" role="alert">
+    <p> ⚠️  Este centro fue rechazado por lo que no se mostrará al publico</p>
+</div>
+{% endif %}
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+
+</head>
+
+
+
+<h1>Detalles de {{centro.nombre}}</h1>
+
+<div class="container card-body">
+
+
+<div id="mapid"></div>
+<script>
+var map = L.map('mapid').setView({lon: {{centro.coordenada_y}}, lat: {{centro.coordenada_x}}}, 20);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    minZoom: 5,
+    attribution: 'Este humilde mapa es propiedad del grupo22'
+}).addTo(map);
+</script>
+<details>
+  <summary>Datos de contacto</summary>
+  <p><b>Nombre:</b> {{centro.nombre}}</p>
+  <p><b>Teléfono:</b> {{centro.telefono}}</p>
+  <p><b>Sitio Web:</b> {{centro.sitio_web}}</p>
+  <p><b>Email:</b> {{centro.email}}</p>
+</details>
+
+<details>
+  <summary>Ubicación y horarios</summary>
+  <p><b>Direccion:</b> {{municipio}},{{centro.direccion}}</p>
+  <p><b>Hora de apertura:</b> {{centro.hora_de_apertura}}</p>
+  <p><b>Hora de cierre:</b> {{centro.hora_de_cierre}}</p>
+  <!-- Podria mostrar centro.coordenada_x, coordenada_y, protocolo_de_vista-->
+</details>
+
+<a href="/static/uploads/{{centro.protocolo_de_vista}}" class="btn btn-info mt-5 mb-2">Ver protocolo de visita</a>
+{% if centro.publicado == 1 %}
+  <a href="{{ url_for('index_turno', id=centro.id)}}" class="btn btn-info mt-5 mb-2">Turnos</a>
+{% endif %}
+
+{% if centro.estado.nombre == 'pendiente' %}
+<a href="{{ url_for('aprobar_centro', id=centro.id)}}" class="btn btn-info mt-5 mb-2">Aprobar</a>
+<a href="{{ url_for('rechazar_centro', id=centro.id)}}" class="btn btn-info mt-5 mb-2">Rechazar</a>
+{% elif centro.estado.nombre == 'aceptado' %}
+    {% if centro.publicado == 0 %}
+        <a href="{{ url_for('publicar_centro', id=centro.id)}}" class="btn btn-info mt-5 mb-2">Publicar</a>
+    {% else %}
+        <a href="{{ url_for('despublicar_centro', id=centro.id)}}" class="btn btn-info mt-5 mb-2">Despublicar</a>
+    {% endif %}
+{% endif %}
+
+
+<script type="text/javascript">
+  
+    // Colocar un marker
+    lat = {{ centro.coordenada_x|float }} 
+    lng = {{ centro.coordenada_y|float }}
+    marker = L.marker({lon:  lng, lat: lat}).bindPopup('Centro de Ayuda').addTo(map);
+</script>
+
+
+</div>
+{% endblock %}

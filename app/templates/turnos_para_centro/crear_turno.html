@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% if mensaje %}
+<div class="alert alert-danger" role="alert">
+    <p>{{ mensaje }}</p>
+</div>
+{% endif %}
+<h1>Registrar Turno</h1>
+
+<div class="container card-body">
+    <span class="card-text">
+        <form action="" method="POST">
+
+            <!-- Variables autocargadas invisibles -->
+            <section hidden class="form-group">
+                <label for="centro"> ID Centro </label>
+                <input type="text" name="id_centro" id="id_centro" value="{{centro.id}}">
+            </section>
+            <section hidden class="form-group">
+                <label for="solo_fecha"> Solo fecha </label>
+                <input type="text" name="solo_fecha" id="solo_fecha" value="si">
+            </section>
+
+            <!-- Mostrar centro -->
+            <p> Se creará un turno para el <b>centro {{ centro.nombre }}</b> (ID: {{centro.id}}), seleccione una fecha para continuar </p><br>
+
+            <!-- Fecha (mayor a la actual) -->
+           
+            <section class="form-group">
+                <label for="fecha"> Fechas </label>
+                <input type="date" class="form-control form-control-lg rounded-0" name="fecha" id="fecha"
+                    value="{{fecha}}" min="{{ f }}" required>
+            </section>
+
+            <button type="submit" class="btn btn-info">Aceptar</button>
+
+        </form>
+    </span>
+</div>
+{% endblock %}

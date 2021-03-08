@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if mensaje_error %}
+<div class="alert alert-warning" role="alert">
+    <p> ⚠️ {{ mensaje_error }}</p>
+</div>
+{% endif %}
+{% if mensaje_exito %}
+<div class="alert alert-success" role="alert">
+    <p>{{ mensaje_exito }}</p>
+</div>
+{% endif %}
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+
+</head>
+
+<body>
+
+
+<h1>Nuevo Centro de Ayuda</h1>
+
+
+
+<div class="container card-body">
+    <span class="card-text">
+        <form action="" method="POST" onsubmit="submitHandler(event)" enctype = "multipart/form-data">
+
+
+            <section class="form-group">
+                <label for="contenido"> Selecciones un municipio: </label>
+                <!-- Deberia poder seleccionar uno de los que vienen de la API -->
+                <select name="municipio" id="municipio">
+                    {% for municipio in municipios %}
+                    <option value="{{ municipio }}">{{ municipios[municipio|string]['name'] }}</option>
+                    {% endfor %}
+                </select>
+            </section>
+
+
+            <section class="form-group">
+                <label for="nombre"> Nombre </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="nombre" id="nombre" placeholder="Ingrese el nombre" required>
+            </section>
+
+            <section class="form-group">
+                <label for="telefono"> Telefono </label>
+                <input type="tel" class="form-control form-control-lg rounded-0" name="telefono" id="telefono" placeholder="Ingrese el telefono" required>
+                <small>Ingresar codigo de area y numero sin espacios</small>
+                <small>Ej: 92211234567</small>
+            </section>
+
+
+            <section class="form-group">
+                <label for="titulo"> Email </label>
+                <input type="email" class="form-control form-control-lg rounded-0" name="email" id="email" placeholder="Ingrese el correo">
+            </section>
+
+            <section class="form-group">
+                <label for="contenido"> Sitio Web </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="web" id="sitio_web" placeholder="Ingrese el sitio web">
+            </section>
+
+
+            <section class="form-group">
+                <label for="contenido"> Dirección </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="direccion" id="direccion" placeholder="Ingrese la dirección" required>
+            </section>
+
+            <section class="form-group">
+                <label for="contenido"> Protocolo de visita </label><br>
+                <input type="file" id="pdf" name="pdf" accept=".pdf">
+            </section>
+
+            <!-- Leaflet -->
+            <section class="form-group">
+                <label for="geolocalizacion"> Geolocalización </label>
+    
+                <div id="mapid"></div>    
+                <script src="{{url_for('static', filename='js/leaflet.js')}}"></script>
+
+            
+                <label for="contenido"> Latitud </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="corx" id="corx" placeholder="Selecciona la ubicación en el mapa">
+                <label for="contenido"> Longitud </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="cory" id="cory" placeholder="Selecciona la ubicación en el mapa">
+            </section>
+
+
+            <section class="form-group">
+                <label for="contenido"> Hora de Apertura </label>
+                <input type="time" class="form-control form-control-lg rounded-0" value= "{{h_ini}}" name="hora_apertura" id="hora_apertura" required>
+                <label for="contenido"> Hora de Cierre </label>
+                <input type="time" class="form-control form-control-lg rounded-0" value= "{{h_fin}}" name="hora_cierre" id="hora_cierre" required>
+            </section>
+
+            <script>
+            function submitHandler(event){
+                hora_apertura= document.getElementById('hora_apertura').value
+                hora_cierre = document.getElementById('hora_apertura').value
+                console.log(hora_apertura)
+                if (hora_cierre < hora_apertura) {
+                    event.preventDefault();
+                    alert('La hora de apertura debe ser menor que la hora de cierre')
+                }
+            }
+
+            </script>
+
+
+
+
+
+
+            <section class="form-group">
+                <label for="contenido"> Tipo de Centro </label><br>
+                {% for tag in tipos %}
+                <input type="checkbox" id="cb{{tag.id}}" name="tipos" value="{{tag.id}}">
+                <span class="badge badge-info">{{tag.nombre}}</span><br>
+                {% endfor %}
+            </section>
+
+
+
+            <!-- Viene publicado por defecto -->
+            <!-- Viene protocolo pdf por defecto -->
+
+            <div class="text-right">
+                <a href="{{ url_for('centros') }}" class="btn btn-white">Cancelar</a>
+                <button type="submit" class="btn btn-info">Aceptar</button>
+            </div>
+        </form>
+    </span>
+</div>
+</body>
+{% endblock %}

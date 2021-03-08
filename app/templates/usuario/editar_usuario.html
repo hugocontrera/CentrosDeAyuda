@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if mensaje %}
+<div class="alert alert-success" role="alert">
+    <ul>
+        <li>{{ mensaje }}</li>
+    </ul>
+</div>
+{% endif %}
+{% if mensaje_error %}
+<div class="alert alert-danger" role="alert">
+    <ul>
+        <li>{{ mensaje_error }}</li>
+    </ul>
+</div>
+{% endif %}
+<h1>Editar Usuario</h1>
+
+<div class="container card-body">
+    <span class="card-text">
+        <form action="{{ url_for('edit_usuario', id=usuario.id) }}" method="POST">
+            <section class="form-group">
+                <label for="titulo"> Usuario </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="usuario" id="usuario" value="{{usuario.usuario}}" required>
+            </section>
+
+            <section class="form-group">
+                <label for="contenido"> Clave </label>
+                <input type="password" class="form-control form-control-lg rounded-0" name="clave" id="clave" value="{{usuario.clave}}" required>
+            </section>
+            <section class="form-group">
+                <label for="contenido"> Confirmar clave </label>
+                <input value="{{usuario.clave}}" type="password" class="form-control form-control-lg rounded-0" name="clave" id="clave_2" oninput="check(this)" placeholder="Confirme la clave" required>
+                <script language='javascript' type='text/javascript'>
+                    function check(input) {
+                        if (input.value != document.getElementById('clave').value) {
+                            input.setCustomValidity('La clave ingresada no coincide');
+                        } else {
+                            input.setCustomValidity('');
+                        }
+                    }
+                </script>
+            </section>
+            <section class="form-group">
+                <label for="titulo"> Nombre </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="nombre" id="nombre" value="{{usuario.nombre}}" required>
+            </section>
+
+            <section class="form-group">
+                <label for="titulo"> Apellido </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="apellido" id="apellido"
+                value="{{usuario.apellido}}" required>
+            </section>
+            <section class="form-group">
+                <label for="titulo"> Email </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="email" id="email" value="{{usuario.email}}" required>
+            </section>
+            <section class="form-group">
+                <label for="titulo"> Activo </label>
+                <select id="activo" name="activo" class="custom-select ">
+                {% if (usuario.activo == 1) %}
+                    <option value=1>Si</option>
+                    <option value=0>No</option>
+                {% else %}
+                    <option value=0>No</option>
+                    <option value=1>Si</option>
+                {%  endif  %}
+                </select>
+            </section>
+
+            <section class="form-group">
+                <label for="roles"> Roles de usuario </label><br>
+                {% for rol in roles %}
+                <input type="checkbox" id="cb{{rol.id}}" name="roles" value="{{rol.id}}"
+                    {% if rol in usuario.roles %}checked{% endif %}
+                >
+                <span class="badge badge-info">{{rol.nombre}}</span><br>
+                {% endfor %}
+            </section>
+
+            <div class="text-right">
+                <a href="{{ url_for('index_usuario') }}" class="btn btn-white">Cancelar</a>
+                <button type="submit" class="btn btn-info">Aceptar</button>
+            </div>
+        </form>
+    </span>
+</div>
+{% endblock %}

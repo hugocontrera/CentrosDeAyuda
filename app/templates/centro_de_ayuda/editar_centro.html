@@ -1,0 +1,142 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if mensaje_error %}
+<div class="alert alert-warning" role="alert">
+    <p> ⚠️ {{ mensaje_error }}</p>
+</div>
+{% endif %}
+{% if mensaje_exito %}
+<div class="alert alert-success" role="alert">
+    <p>{{ mensaje_exito }}</p>
+</div>
+{% endif %}
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+
+</head>
+
+
+
+
+<h1>Editar Centro de Ayuda</h1>
+
+<div class="container card-body">
+    <span class="card-text">
+        <form action="" method="POST">
+
+
+            <section class="form-group">
+                <label for="contenido"> Selecciones un municipio: </label>
+                
+                
+                <select name="municipio" id="municipio">
+                    {% for municipio in municipios %}
+
+                    <!-- Pongo en selected el municipio del centro -->
+                    <option value="{{ municipio }}" 
+                    {% if municipios[municipio|string]['id'] == centro.municipio_id %}selected{% endif %}>
+                        {{ municipios[municipio|string]['name'] }}</option>
+                    {% endfor %}
+                </select>
+            </section>
+
+
+            <section class="form-group">
+                <label for="nombre"> Nombre </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="nombre" id="nombre" placeholder="Ingrese el nombre" value="{{ centro.nombre }}" required>
+            </section>
+
+            <section class="form-group">
+                <label for="telefono"> Telefono </label>
+                <input type="tel" value="{{centro.telefono}}" class="form-control form-control-lg rounded-0" name="telefono" id="telefono" placeholder="Ingrese el telefono" required>
+                <small>Ingresar codigo de area y numero sin espacios</small>
+                <small>Ej: 92211234567</small>
+            </section>
+
+
+            <section class="form-group">
+                <label for="titulo"> Email </label>
+                <input value="{{ centro.email }}" type="email" class="form-control form-control-lg rounded-0" name="email" id="email" placeholder="Ingrese el correo" >
+            </section>
+
+            <section class="form-group">
+                <label for="contenido"> Sitio Web </label>
+                <input value="{{ centro.sitio_web }}" type="text" class="form-control form-control-lg rounded-0" name="web" id="sitio_web" placeholder="Ingrese el sitio web" >
+            </section>
+
+
+            <section class="form-group">
+                <label for="contenido"> Dirección </label>
+                <input value="{{ centro.direccion }}" type="text" class="form-control form-control-lg rounded-0" name="direccion" id="direccion" placeholder="Ingrese la dirección" required>
+            </section>
+
+            <section class="form-group">
+                <label for="contenido"> Protocolo de visita </label><br>
+                <input type="file" id="pdf" name="pdf" accept=".pdf"><br>
+                <a target="_blank" href="/static/uploads/{{centro.protocolo_de_vista}}">Ver protocolo actual</a>
+            </section>
+
+
+            <!-- Leaflet -->
+            <section class="form-group">
+                <label for="geolocalizacion"> Geolocalización </label>
+    
+                <div id="mapid"></div>    
+                <script src="{{url_for('static', filename='js/leaflet.js')}}"></script>
+
+            
+                <label for="contenido"> Latitud </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="corx" id="corx" placeholder="Selecciona la ubicación en el mapa" value="{{ centro.coordenada_x }}">
+                <label for="contenido"> Longitud </label>
+                <input type="text" class="form-control form-control-lg rounded-0" name="cory" id="cory" placeholder="Selecciona la ubicación en el mapa" value="{{ centro.coordenada_y }}">
+            </section>
+
+
+            <section class="form-group">
+                <label for="contenido"> Hora de Apertura </label>
+                <input value="{{ centro.hora_de_apertura }}" type="time" class="form-control form-control-lg rounded-0" name="hora_apertura" id="hora_apertura" required>
+                <label for="contenido"> Hora de Cierre </label>
+                <input value="{{ centro.hora_de_cierre }}" type="time" class="form-control form-control-lg rounded-0" name="hora_cierre" id="hora_cierre" required>
+            </section>
+
+
+
+
+
+
+
+
+            <!-- Deberia poner en checked los que correspondan -->
+            <section class="form-group">
+                <label for="contenido"> Tipo de Centro </label><br>
+                {% for tag in tipos %}
+                <input type="checkbox" id="cb{{tag.id}}" name="tipos" value="{{tag.id}}" 
+                    {% if tag in centro.tipos_de_centro %}checked{% endif %}
+                >
+                <span class="badge badge-info">{{tag.nombre}}</span><br>
+                {% endfor %}
+            </section>
+
+
+
+            <!-- Viene publicado por defecto -->
+            <!-- Viene protocolo pdf por defecto -->
+
+            <div class="text-right">
+                <a href="{{ url_for('centros') }}" class="btn btn-white">Cancelar</a>
+                <button type="submit" class="btn btn-info">Aceptar</button>
+            </div>
+        </form>
+    </span>
+</div>
+<script type="text/javascript">
+    lat = {{ centro.coordenada_x|float }} 
+    lng = {{ centro.coordenada_y|float }}
+    marker = L.marker({lon:  lng, lat: lat}).bindPopup('Centro de Ayuda').addTo(map);
+</script>
+{% endblock %}
